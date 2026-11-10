@@ -142,7 +142,7 @@ A identidade visual segue estritamente a paleta de 5 tons de ciano/turquesa:
 
 1. Navegue até a pasta do projeto:
 ```bash
-cd "c:\Users\SENAI DS 2025\OneDrive - SESISENAISP - Escolas\Área de Trabalho\5G\5G_IoT"
+cd "pasta\5G_IoT"
 ```
 
 2. Dê um duplo clique no arquivo:
