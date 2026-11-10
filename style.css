@@ -1,0 +1,491 @@
+/* ==========================================================================
+   5G & IoT DIGITAL POSTER - ESTILOS E PALETA VISUAL
+   Paleta Oficial extraída da especificação:
+   - #B2FFFF: Cyan Ultrabrilhante (Highlighter, Glow, Destaques)
+   - #98EDED: Cyan Menta Suave (Textos Secundários, Badges)
+   - #7AE4E4: Cyan Aquamarino (Ícones, Bordas, Gradientes Médios)
+   - #59DDDD: Cyan Turquesa Vivo (Botões, Títulos, Acentos)
+   - #36C6C6: Cyan Escuro / Teal Vibrante (Bordas Profundas, Sombras, Base de Acento)
+   ========================================================================== */
+
+:root {
+  --palette-1: #B2FFFF;
+  --palette-2: #98EDED;
+  --palette-3: #7AE4E4;
+  --palette-4: #59DDDD;
+  --palette-5: #36C6C6;
+
+  --bg-dark-base: #03080e;
+  --bg-dark-surface: #07151e;
+  --bg-dark-card: rgba(8, 26, 36, 0.75);
+  --bg-dark-glass: rgba(11, 35, 48, 0.45);
+  
+  --glow-cyan: 0 0 25px rgba(89, 221, 221, 0.45);
+  --glow-cyan-strong: 0 0 35px rgba(178, 255, 255, 0.7);
+  --glow-subtle: 0 0 15px rgba(54, 198, 198, 0.25);
+}
+
+@layer base {
+  body {
+    background-color: var(--bg-dark-base);
+    color: #e2f8f8;
+    font-family: 'Space Grotesk', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    overflow-x: hidden;
+  }
+}
+
+/* ==========================================================================
+   CUSTOM 5G RADIO WAVE SCROLLBAR (Efeito de Onda de Rádio na Barra de Rolagem)
+   ========================================================================== */
+html {
+  scrollbar-width: thin;
+  scrollbar-color: #59DDDD #03080e;
+}
+
+/* Largura da barra de rolagem */
+::-webkit-scrollbar {
+  width: 14px;
+}
+
+/* Trilho com graduações de espectro e frequências de rádio */
+::-webkit-scrollbar-track {
+  background: #03090f;
+  border-left: 1px solid rgba(89, 221, 221, 0.2);
+  background-image: 
+    repeating-linear-gradient(
+      0deg,
+      rgba(54, 198, 198, 0.15) 0px,
+      rgba(54, 198, 198, 0.15) 1px,
+      transparent 1px,
+      transparent 8px
+    ),
+    radial-gradient(ellipse at 50% 50%, rgba(54, 198, 198, 0.08) 0%, transparent 80%);
+}
+
+/* O "Thumb" com padrão vetorial de Ondas Senoidais / Radiofrequência 5G */
+::-webkit-scrollbar-thumb {
+  background-color: #08212e;
+  /* SVG de Ondas de Rádio Senoidais contínuas em Ciano (#B2FFFF e #59DDDD) */
+  background-image: 
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='28' height='36' viewBox='0 0 28 36'%3E%3Cpath d='M0 18 Q 7 4, 14 18 T 28 18' fill='none' stroke='%23B2FFFF' stroke-width='2.4' stroke-linecap='round' opacity='0.95'/%3E%3Cpath d='M0 9 Q 7 0, 14 9 T 28 9' fill='none' stroke='%2359DDDD' stroke-width='1.6' stroke-linecap='round' opacity='0.6'/%3E%3Cpath d='M0 27 Q 7 18, 14 27 T 28 27' fill='none' stroke='%237AE4E4' stroke-width='1.6' stroke-linecap='round' opacity='0.6'/%3E%3C/svg%3E"),
+    linear-gradient(180deg, #36C6C6 0%, #0d2e3d 50%, #59DDDD 100%);
+  background-size: 14px 24px, 100% 100%;
+  background-position: center;
+  background-repeat: repeat-y, no-repeat;
+  border-radius: 7px;
+  border: 1.5px solid rgba(178, 255, 255, 0.65);
+  box-shadow: 0 0 15px rgba(89, 221, 221, 0.6), inset 0 0 8px rgba(178, 255, 255, 0.4);
+  transition: all 0.3s ease;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background-color: #0f394e;
+  border-color: #B2FFFF;
+  box-shadow: 0 0 22px rgba(178, 255, 255, 0.9), inset 0 0 12px #B2FFFF;
+}
+
+::-webkit-scrollbar-thumb:active {
+  background-color: #175270;
+  box-shadow: 0 0 30px #B2FFFF, inset 0 0 15px #B2FFFF;
+}
+
+/* Estilos Adicionais do HUD Flutuante de Onda de Rádio */
+#radio-wave-scrollbar-hud {
+  transition: opacity 0.3s ease, transform 0.3s ease;
+}
+
+#radio-track-container:hover {
+  border-color: #B2FFFF;
+  box-shadow: 0 0 25px rgba(178, 255, 255, 0.4);
+}
+
+/* Poster Frame styling */
+.poster-container {
+  max-width: 1100px;
+  margin: 0 auto;
+  position: relative;
+  background: radial-gradient(circle at 50% 0%, rgba(54, 198, 198, 0.12) 0%, rgba(3, 8, 14, 0.95) 70%),
+              linear-gradient(180deg, #051017 0%, #03080e 100%);
+  border: 1px solid rgba(122, 228, 228, 0.25);
+  box-shadow: 0 0 80px rgba(54, 198, 198, 0.15), inset 0 0 60px rgba(8, 26, 36, 0.6);
+}
+
+/* Background Cyber Grid */
+.cyber-grid {
+  background-size: 40px 40px;
+  background-image: 
+    linear-gradient(to right, rgba(122, 228, 228, 0.05) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(122, 228, 228, 0.05) 1px, transparent 1px);
+}
+
+/* Glowing Neon Borders & Text */
+.text-glow {
+  text-shadow: 0 0 12px rgba(178, 255, 255, 0.8), 0 0 25px rgba(89, 221, 221, 0.5);
+}
+
+.text-gradient-cyan {
+  background: linear-gradient(135deg, #B2FFFF 0%, #7AE4E4 50%, #36C6C6 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.box-glow {
+  box-shadow: 0 0 20px rgba(89, 221, 221, 0.25);
+}
+
+.box-glow-strong {
+  box-shadow: 0 0 30px rgba(178, 255, 255, 0.4), inset 0 0 15px rgba(89, 221, 221, 0.2);
+}
+
+.border-cyan-glow {
+  border-color: rgba(122, 228, 228, 0.4);
+  transition: all 0.3s ease;
+}
+
+.border-cyan-glow:hover {
+  border-color: #B2FFFF;
+  box-shadow: 0 0 20px rgba(89, 221, 221, 0.35);
+}
+
+/* Canvas de fundo sem interferência */
+#cyber-canvas {
+  pointer-events: none !important;
+  z-index: -1 !important;
+}
+
+/* Smartphone Frame (100% 2D estável, garantindo que NADA fique na frente dos botões) */
+.phone-mockup-wrapper {
+  position: relative !important;
+  z-index: 15 !important;
+}
+
+.phone-mockup {
+  width: 320px;
+  height: 640px;
+  background: #061118;
+  border-radius: 46px;
+  border: 4px solid #36C6C6;
+  box-shadow: 
+    0 0 0 2px #09202a,
+    0 25px 60px rgba(0, 0, 0, 0.85),
+    0 0 35px rgba(89, 221, 221, 0.3),
+    inset 0 0 20px rgba(178, 255, 255, 0.15);
+  position: relative !important;
+  overflow: hidden !important;
+  z-index: 20 !important;
+  pointer-events: auto !important;
+  transition: box-shadow 0.3s ease, border-color 0.3s ease !important;
+}
+
+.phone-screen {
+  background: linear-gradient(180deg, #071a24 0%, #040c12 100%);
+  height: calc(100% - 46px);
+  border-radius: 36px;
+  overflow-y: auto;
+  scrollbar-width: none;
+  position: relative !important;
+  z-index: 25 !important;
+  pointer-events: auto !important;
+}
+
+#btn-run-speed-test {
+  position: relative !important;
+  z-index: 9999 !important;
+  cursor: pointer !important;
+  pointer-events: auto !important;
+  user-select: none !important;
+  touch-action: manipulation !important;
+}
+
+#btn-run-speed-test * {
+  pointer-events: none !important;
+}
+
+#speedtest-hud-card {
+  position: relative !important;
+  z-index: 999 !important;
+  cursor: pointer !important;
+  pointer-events: auto !important;
+}
+
+.phone-mockup:hover {
+  border-color: #59DDDD !important;
+  box-shadow: 
+    0 0 0 2px #59DDDD,
+    0 30px 80px rgba(0, 0, 0, 0.95),
+    0 0 50px rgba(178, 255, 255, 0.5),
+    inset 0 0 25px rgba(178, 255, 255, 0.25) !important;
+}
+
+.phone-speaker {
+  width: 70px;
+  height: 4px;
+  background: #194652;
+  border-radius: 4px;
+  margin: 12px auto 6px;
+  pointer-events: none;
+}
+
+.phone-camera {
+  width: 12px;
+  height: 12px;
+  background: radial-gradient(circle, #36C6C6 30%, #09202a 70%);
+  border-radius: 50%;
+  margin: 0 auto 8px;
+  box-shadow: 0 0 5px #7AE4E4;
+  pointer-events: none;
+}
+
+.phone-screen::-webkit-scrollbar {
+  display: none;
+}
+
+/* 5G Radiation Waves Animation (Totalmente em segundo plano) */
+.signal-circle {
+  position: absolute !important;
+  border-radius: 50%;
+  border: 1.5px solid rgba(122, 228, 228, 0.6);
+  pointer-events: none !important;
+  z-index: 1 !important;
+  animation: rippleWaves 3s cubic-bezier(0.1, 0.8, 0.3, 1) infinite;
+}
+
+@keyframes rippleWaves {
+  0% {
+    width: 20px;
+    height: 20px;
+    opacity: 1;
+    transform: translate(-50%, -50%) scale(0.2);
+  }
+  100% {
+    width: 450px;
+    height: 450px;
+    opacity: 0;
+    transform: translate(-50%, -50%) scale(1);
+  }
+}
+
+/* Floating holographic particles */
+.floating-badge {
+  animation: floatSlow 4s ease-in-out infinite alternate;
+}
+
+@keyframes floatSlow {
+  0% {
+    transform: translateY(0px) rotate(0deg);
+  }
+  100% {
+    transform: translateY(-10px) rotate(1deg);
+  }
+}
+
+/* Live radar scanner line */
+.radar-sweep {
+  animation: radarRotate 3.5s linear infinite;
+  transform-origin: center;
+}
+
+@keyframes radarRotate {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* Speedometer needle animation */
+.speed-needle {
+  transform-origin: bottom center;
+  transition: transform 1.2s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+/* Pulse Glow Keyframe */
+@keyframes neonPulse {
+  0%, 100% {
+    opacity: 0.8;
+    filter: drop-shadow(0 0 8px #59DDDD);
+  }
+  50% {
+    opacity: 1;
+    filter: drop-shadow(0 0 18px #B2FFFF);
+  }
+}
+
+.animate-neon-pulse {
+  animation: neonPulse 2.5s ease-in-out infinite;
+}
+
+/* Industrial Machine Vibration & Fault Shake */
+@keyframes shakeAnimation {
+  0%, 100% { transform: translate(0, 0) rotate(0deg); }
+  20% { transform: translate(-3px, 2px) rotate(-1deg); }
+  40% { transform: translate(3px, -2px) rotate(1deg); }
+  60% { transform: translate(-2px, -1px) rotate(0.5deg); }
+  80% { transform: translate(2px, 3px) rotate(-0.5deg); }
+}
+
+.animate-shake {
+  animation: shakeAnimation 0.22s infinite ease-in-out;
+}
+
+/* 5G Packet Burst */
+.active-burst {
+  box-shadow: 0 0 25px #B2FFFF, 0 0 40px #59DDDD !important;
+  background-color: rgba(178, 255, 255, 0.4) !important;
+}
+
+.active-burst div {
+  animation: ping 0.4s cubic-bezier(0, 0, 0.2, 1) infinite !important;
+  background-color: #B2FFFF !important;
+}
+
+/* Card Visibility and High-Contrast Styling (Garantia de que nenhum card fique transparente) */
+.fade-up-item {
+  opacity: 1 !important;
+  visibility: visible !important;
+  transition: transform 0.25s ease, border-color 0.25s ease, box-shadow 0.25s ease;
+}
+
+.fade-up-item:hover {
+  transform: translateY(-3px);
+  border-color: #B2FFFF !important;
+  box-shadow: 0 0 20px rgba(89, 221, 221, 0.3) !important;
+}
+
+/* Garante contraste perfeito e iluminação de todos os cartões */
+.bg-darksurface\/90, .bg-darkcard {
+  background-color: rgba(7, 23, 34, 0.94) !important;
+  border-color: rgba(122, 228, 228, 0.45) !important;
+}
+
+/* ==========================================================================
+   5G SATELLITE TO EARTH & VICE-VERSA TRANSMISSION EFFECTS
+   ========================================================================== */
+@keyframes satelliteFloat {
+  0%, 100% {
+    transform: translateY(0px) rotate(0deg);
+  }
+  50% {
+    transform: translateY(-9px) rotate(1.2deg);
+  }
+}
+
+.animate-satellite {
+  animation: satelliteFloat 4.5s ease-in-out infinite;
+}
+
+/* Pulsos concêntricos de sinal de rádio emitidos pelo satélite e pela terra */
+@keyframes pulseRadioWave {
+  0% {
+    transform: scale(0.2);
+    opacity: 0.9;
+  }
+  100% {
+    transform: scale(2.8);
+    opacity: 0;
+  }
+}
+
+.sat-wave-pulse {
+  position: absolute;
+  border-radius: 50%;
+  border: 1.5px solid #B2FFFF;
+  pointer-events: none;
+  animation: pulseRadioWave 2.8s cubic-bezier(0.1, 0.8, 0.3, 1) infinite;
+}
+
+.sat-wave-pulse-2 {
+  animation-delay: 1.4s;
+}
+
+.earth-wave-pulse {
+  position: absolute;
+  border-radius: 50%;
+  border: 1.5px solid #59DDDD;
+  pointer-events: none;
+  animation: pulseRadioWave 2.8s cubic-bezier(0.1, 0.8, 0.3, 1) infinite 0.7s;
+}
+
+/* Fluxo de Pacotes Downlink (Satélite -> Terra) */
+@keyframes packetDownlink {
+  0% {
+    top: 5%;
+    opacity: 0;
+    transform: scale(0.6);
+  }
+  15% {
+    opacity: 1;
+    transform: scale(1.1);
+  }
+  85% {
+    opacity: 1;
+    transform: scale(1.1);
+  }
+  100% {
+    top: 95%;
+    opacity: 0;
+    transform: scale(0.6);
+  }
+}
+
+/* Fluxo de Pacotes Uplink (Terra -> Satélite) */
+@keyframes packetUplink {
+  0% {
+    top: 95%;
+    opacity: 0;
+    transform: scale(0.6);
+  }
+  15% {
+    opacity: 1;
+    transform: scale(1.1);
+  }
+  85% {
+    opacity: 1;
+    transform: scale(1.1);
+  }
+  100% {
+    top: 5%;
+    opacity: 0;
+    transform: scale(0.6);
+  }
+}
+
+.packet-down-1 {
+  animation: packetDownlink 2.2s linear infinite;
+}
+.packet-down-2 {
+  animation: packetDownlink 2.2s linear infinite 1.1s;
+}
+
+.packet-up-1 {
+  animation: packetUplink 2.2s linear infinite 0.5s;
+}
+.packet-up-2 {
+  animation: packetUplink 2.2s linear infinite 1.6s;
+}
+
+/* Brilho da Atmosfera Terrestre */
+.earth-atmosphere {
+  box-shadow: 
+    0 -15px 40px rgba(89, 221, 221, 0.35),
+    0 -30px 80px rgba(54, 198, 198, 0.2),
+    inset 0 10px 25px rgba(178, 255, 255, 0.25);
+}
+
+/* Print/Poster Mode */
+@media print {
+  body {
+    background: #ffffff !important;
+    color: #111827 !important;
+  }
+  .poster-container {
+    max-width: 100% !important;
+    border: none !important;
+    box-shadow: none !important;
+    background: #ffffff !important;
+  }
+  .no-print {
+    display: none !important;
+  }
+}

@@ -1,0 +1,1257 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>5G e IoT</title>
+
+  <!-- Google Fonts: Space Grotesk & Outfit -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700;800;900&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            cyan1: '#B2FFFF',
+            cyan2: '#98EDED',
+            cyan3: '#7AE4E4',
+            cyan4: '#59DDDD',
+            cyan5: '#36C6C6',
+            darkbase: '#03080e',
+            darksurface: '#07151e',
+            darkcard: 'rgba(8, 26, 36, 0.88)'
+          },
+          fontFamily: {
+            sans: ['Space Grotesk', 'sans-serif'],
+            display: ['Outfit', 'sans-serif']
+          }
+        }
+      }
+    }
+  </script>
+
+  <!-- GSAP & ScrollTrigger -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
+
+  <!-- Lucide Icons -->
+  <script src="https://unpkg.com/lucide@latest"></script>
+
+  <!-- Custom Styles -->
+  <link rel="stylesheet" href="style.css">
+</head>
+<body class="bg-darkbase text-cyan2 selection:bg-cyan4 selection:text-darkbase relative min-h-screen">
+
+  <!-- Canvas de Partículas e Ondas Conectadas -->
+  <canvas id="cyber-canvas" class="fixed inset-0 pointer-events-none z-0 opacity-40"></canvas>
+
+  <!-- Barra de Ferramentas / Controles Superiores do Pôster Digital -->
+  <header class="no-print sticky top-0 z-50 backdrop-blur-md bg-darkbase/80 border-b border-cyan5/30 px-4 py-3">
+    <div class="max-w-6xl mx-auto flex flex-wrap items-center justify-between gap-3">
+      <div class="flex items-center gap-3">
+        <span class="inline-flex items-center justify-center w-8 h-8 rounded-lg bg-cyan5/20 border border-cyan4 text-cyan1 font-display font-bold text-sm shadow-[0_0_12px_#59DDDD]">
+          5G
+        </span>
+        <div class="leading-tight">
+          <span class="text-xs uppercase tracking-widest text-cyan3 font-semibold block">Infográfico & Pôster Digital</span>
+          <span class="text-sm font-bold text-white tracking-wide">5G e Internet das Coisas (IoT)</span>
+        </div>
+      </div>
+
+      <!-- Ações Interativas -->
+      <div class="flex items-center gap-2">
+        <button id="sound-toggle" class="px-3 py-1.5 rounded-full border border-cyan5/50 bg-darksurface/90 hover:border-cyan3 text-xs font-medium text-cyan2 flex items-center gap-1.5 transition-all">
+          <i data-lucide="volume-2" class="w-3.5 h-3.5 text-cyan1"></i>
+          <span class="sound-label">Áudio: ON</span>
+        </button>
+        <button id="btn-fullscreen" class="px-3 py-1.5 rounded-full border border-cyan5/50 bg-darksurface/90 hover:border-cyan3 text-xs font-medium text-cyan2 flex items-center gap-1.5 transition-all">
+          <i data-lucide="maximize" class="w-3.5 h-3.5 text-cyan3"></i>
+          <span>Apresentação</span>
+        </button>
+        <button id="btn-print" class="px-3 py-1.5 rounded-full bg-gradient-to-r from-cyan5 to-cyan4 text-darkbase font-bold text-xs flex items-center gap-1.5 shadow-[0_0_15px_#59DDDD] hover:brightness-110 transition-all">
+          <i data-lucide="printer" class="w-3.5 h-3.5"></i>
+          <span>Imprimir / Salvar PDF</span>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- =========================================================================
+       BARRA LATERAL FLUTUANTE COM EFEITO DE ONDA DE RÁDIO 5G (SCROLLTRACKER)
+       ========================================================================= -->
+  <aside id="radio-wave-scrollbar-hud" class="no-print fixed right-2 sm:right-5 top-1/2 -translate-y-1/2 z-40 hidden md:flex flex-col items-center select-none" title="Navegador de Frequência 5G e Ondas de Rádio">
+    <!-- Emissor Superior com Ícone de Antena 5G -->
+    <div class="relative flex items-center justify-center w-8 h-8 rounded-full bg-darksurface border border-cyan4/60 shadow-[0_0_12px_#59DDDD] mb-2 text-cyan1 cursor-pointer" id="btn-scroll-top">
+      <i data-lucide="radio" class="w-4 h-4 animate-pulse"></i>
+      <div class="absolute inset-0 rounded-full border border-cyan1/40 animate-ping opacity-60 pointer-events-none"></div>
+    </div>
+
+    <!-- Trilho de Espectro de Rádio com Onda Senoidal Animada -->
+    <div id="radio-track-container" class="relative w-8 h-72 sm:h-80 rounded-full bg-darkbase/90 border border-cyan5/40 backdrop-blur-md overflow-hidden flex justify-center py-2 cursor-pointer shadow-[0_0_20px_rgba(54,198,198,0.25)]">
+      
+      <!-- Fundo de Marcações de Frequência (GHz Spectrum Ticks) -->
+      <div class="absolute inset-0 flex flex-col justify-between py-3 pointer-events-none opacity-40">
+        <span class="w-3.5 h-0.5 bg-cyan3 self-center"></span>
+        <span class="w-2 h-0.5 bg-cyan4 self-center"></span>
+        <span class="w-3 h-0.5 bg-cyan3 self-center"></span>
+        <span class="w-2 h-0.5 bg-cyan4 self-center"></span>
+        <span class="w-3.5 h-0.5 bg-cyan3 self-center"></span>
+        <span class="w-2 h-0.5 bg-cyan4 self-center"></span>
+        <span class="w-3.5 h-0.5 bg-cyan3 self-center"></span>
+      </div>
+
+      <!-- Onda de Rádio Senoidal Oscilante em SVG -->
+      <svg id="radio-sine-svg" class="absolute inset-0 w-full h-full pointer-events-none" preserveAspectRatio="none" viewBox="0 0 32 300">
+        <path id="sine-wave-path-bg" d="" fill="none" stroke="#36C6C6" stroke-width="1.5" stroke-dasharray="3 3" opacity="0.4" />
+        <path id="sine-wave-path" d="" fill="none" stroke="#B2FFFF" stroke-width="2.5" stroke-linecap="round" filter="drop-shadow(0 0 4px #59DDDD)" />
+      </svg>
+
+      <!-- Indicador Móvel / Onda de Rádio Thumb (Scroll Progress Emitter) -->
+      <div id="radio-scroll-thumb" class="absolute w-7 h-7 -translate-y-1/2 left-0.5 rounded-full bg-gradient-to-br from-cyan1 via-cyan4 to-cyan5 flex items-center justify-center shadow-[0_0_18px_#B2FFFF] transition-transform duration-75 ease-out" style="top: 14px;">
+        <!-- Círculo concêntrico de pulso de rádio -->
+        <span class="w-2.5 h-2.5 rounded-full bg-darkbase"></span>
+        <span class="absolute inset-0 rounded-full border-2 border-cyan1 animate-ping opacity-75"></span>
+      </div>
+    </div>
+
+    <!-- Indicador de Frequência e Percentual de Scroll -->
+    <div class="mt-2 text-center">
+      <span id="scroll-percentage-hud" class="block text-[10px] font-mono font-black text-cyan1 bg-darkbase/90 border border-cyan4/50 px-1.5 py-0.5 rounded shadow-[0_0_10px_#59DDDD]">
+        0%
+      </span>
+      <span class="text-[8px] font-mono uppercase tracking-widest text-cyan3/80 block mt-0.5">3.5 GHz</span>
+    </div>
+  </aside>
+
+  <!-- =========================================================================
+       CONTAINER PRINCIPAL DO PÔSTER VERTICAL
+       ========================================================================= -->
+  <main class="poster-container my-6 md:my-10 rounded-2xl md:rounded-3xl p-6 sm:p-10 md:p-14 cyber-grid relative overflow-hidden z-10">
+
+    <!-- Decorações de Circuito Sci-Fi nos Cantos -->
+    <div class="absolute top-4 left-4 w-12 h-12 border-t-2 border-l-2 border-cyan4 pointer-events-none opacity-60"></div>
+    <div class="absolute top-4 right-4 w-12 h-12 border-t-2 border-r-2 border-cyan4 pointer-events-none opacity-60"></div>
+    <div class="absolute bottom-4 left-4 w-12 h-12 border-b-2 border-l-2 border-cyan4 pointer-events-none opacity-60"></div>
+    <div class="absolute bottom-4 right-4 w-12 h-12 border-b-2 border-r-2 border-cyan4 pointer-events-none opacity-60"></div>
+
+    <!-- =======================================================================
+         HERO SECTION / CABEÇALHO DO PÔSTER
+         ======================================================================= -->
+    <section class="text-center relative pt-4 pb-12">
+      <!-- Tag / Badge Superior -->
+      <div class="hero-badge inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-cyan5/15 border border-cyan3/40 mb-6 backdrop-blur-md">
+        <span class="w-2.5 h-2.5 rounded-full bg-cyan1 animate-ping"></span>
+        <span class="text-xs font-bold tracking-widest uppercase text-cyan1 font-mono">REDES MÓVEIS DE 5ª GERAÇÃO & CONECTIVIDADE INTELIGENTE</span>
+      </div>
+
+      <!-- Título Principal com Efeito Brilho e Paleta de Cores -->
+      <h1 class="font-display font-black text-4xl sm:text-6xl md:text-7xl leading-tight tracking-tight uppercase mb-4">
+        <span class="hero-title-line block text-white drop-shadow-[0_0_20px_rgba(178,255,255,0.4)]">
+          5G &amp; IoT
+        </span>
+        <span class="hero-title-line block text-gradient-cyan text-glow">
+          O Futuro Conectado
+        </span>
+      </h1>
+
+      <p class="hero-title-line max-w-2xl mx-auto text-base sm:text-lg text-cyan2/90 font-light leading-relaxed mb-6">
+        Como a velocidade ultra-rápida e a baixíssima latência impulsionam a Internet das Coisas, a Inteligência Artificial e a Automação em tempo real.
+      </p>
+
+      <!-- Badge do Autor e Fontes (Exatamente da Pesquisa) -->
+      <div class="hero-author-badge inline-flex flex-wrap items-center justify-center gap-3 sm:gap-6 px-6 py-2.5 rounded-2xl bg-darksurface/80 border border-cyan5/40 shadow-[0_0_25px_rgba(54,198,198,0.2)]">
+        <div class="flex items-center gap-2">
+          <i data-lucide="users" class="w-4 h-4 text-cyan1"></i>
+          <span class="text-xs text-gray-300">Pesquisa:</span>
+          <span class="text-xs font-bold text-cyan1 tracking-wide">Isabelly Ferreira de Lima e Lorena Rinaldo Moreira</span>
+        </div>
+        <div class="hidden sm:block w-px h-4 bg-cyan5/40"></div>
+        <div class="flex items-center gap-2">
+          <i data-lucide="database" class="w-4 h-4 text-cyan3"></i>
+          <span class="text-xs text-gray-300">Fontes Oficiais:</span>
+          <span class="text-xs font-semibold text-cyan2">IBM &amp; Amazon Web Services</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- Linha divisória de neon -->
+    <div class="w-full h-px bg-gradient-to-r from-transparent via-cyan4/50 to-transparent my-6"></div>
+
+    <!-- =======================================================================
+         SEÇÃO 1: O QUE É 5G E QUAIS SÃO SUAS PRINCIPAIS CARACTERÍSTICAS?
+         ======================================================================= -->
+    <section class="poster-section my-12">
+      <div class="flex items-center gap-3 mb-4">
+        <div class="p-2.5 rounded-xl bg-cyan5/20 border border-cyan4 text-cyan1">
+          <i data-lucide="radio" class="w-6 h-6"></i>
+        </div>
+        <div>
+          <span class="text-xs font-mono uppercase tracking-widest text-cyan4 font-bold">Fundamentos da Tecnologia</span>
+          <h2 class="text-2xl sm:text-3xl font-display font-extrabold text-white">
+            O que é 5G e quais são suas principais características?
+          </h2>
+        </div>
+      </div>
+
+      <!-- Texto Conceitual Exato da Pesquisa -->
+      <div class="fade-up-item bg-darkcard backdrop-blur-md border border-cyan5/40 rounded-2xl p-6 sm:p-8 mb-8 box-glow relative">
+        <div class="absolute -top-3 left-6 px-3 py-0.5 rounded-full bg-cyan5 text-darkbase font-mono text-xs font-bold uppercase">
+          Definição Essencial
+        </div>
+        <p class="text-base sm:text-lg text-cyan1 font-normal leading-relaxed">
+          "O <strong>5G</strong> é a quinta geração das redes móveis, desenvolvida para oferecer conexões mais rápidas, estáveis e eficientes. Ele permite transmitir grandes quantidades de dados em menos tempo e conectar muitos dispositivos simultaneamente."
+        </p>
+      </div>
+
+      <!-- Grid com as 5 Características Principais (da pesquisa) -->
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+        <!-- 1. Alta velocidade -->
+        <div class="fade-up-item bg-darksurface/90 border border-cyan5/40 hover:border-cyan1 rounded-2xl p-5 transition-all duration-300 group hover:-translate-y-1">
+          <div class="w-12 h-12 rounded-xl bg-cyan5/20 border border-cyan4/40 flex items-center justify-center text-cyan1 mb-4 group-hover:scale-110 group-hover:shadow-[0_0_15px_#B2FFFF] transition-all">
+            <i data-lucide="zap" class="w-6 h-6"></i>
+          </div>
+          <h3 class="text-lg font-bold text-white mb-2 group-hover:text-cyan1 transition-colors">
+            Alta velocidade
+          </h3>
+          <p class="text-sm text-cyan2/80 leading-snug">
+            Permite downloads e uploads muito mais rápidos, viabilizando transferências de gigabytes em frações de segundo.
+          </p>
+        </div>
+
+        <!-- 2. Baixa latência -->
+        <div class="fade-up-item bg-darksurface/90 border border-cyan5/40 hover:border-cyan1 rounded-2xl p-5 transition-all duration-300 group hover:-translate-y-1">
+          <div class="w-12 h-12 rounded-xl bg-cyan5/20 border border-cyan4/40 flex items-center justify-center text-cyan1 mb-4 group-hover:scale-110 group-hover:shadow-[0_0_15px_#B2FFFF] transition-all">
+            <i data-lucide="timer" class="w-6 h-6"></i>
+          </div>
+          <h3 class="text-lg font-bold text-white mb-2 group-hover:text-cyan1 transition-colors">
+            Baixa latência
+          </h3>
+          <p class="text-sm text-cyan2/80 leading-snug">
+            Reduz o tempo de resposta entre o envio e o recebimento de informações para até 1 milissegundo.
+          </p>
+        </div>
+
+        <!-- 3. Maior capacidade -->
+        <div class="fade-up-item bg-darksurface/90 border border-cyan5/40 hover:border-cyan1 rounded-2xl p-5 transition-all duration-300 group hover:-translate-y-1">
+          <div class="w-12 h-12 rounded-xl bg-cyan5/20 border border-cyan4/40 flex items-center justify-center text-cyan1 mb-4 group-hover:scale-110 group-hover:shadow-[0_0_15px_#B2FFFF] transition-all">
+            <i data-lucide="cpu" class="w-6 h-6"></i>
+          </div>
+          <h3 class="text-lg font-bold text-white mb-2 group-hover:text-cyan1 transition-colors">
+            Maior capacidade
+          </h3>
+          <p class="text-sm text-cyan2/80 leading-snug">
+            Conecta milhares de dispositivos ao mesmo tempo sem perda de desempenho por densidade de conexão.
+          </p>
+        </div>
+
+        <!-- 4. Maior confiabilidade -->
+        <div class="fade-up-item bg-darksurface/90 border border-cyan5/40 hover:border-cyan1 rounded-2xl p-5 transition-all duration-300 group hover:-translate-y-1">
+          <div class="w-12 h-12 rounded-xl bg-cyan5/20 border border-cyan4/40 flex items-center justify-center text-cyan1 mb-4 group-hover:scale-110 group-hover:shadow-[0_0_15px_#B2FFFF] transition-all">
+            <i data-lucide="shield-check" class="w-6 h-6"></i>
+          </div>
+          <h3 class="text-lg font-bold text-white mb-2 group-hover:text-cyan1 transition-colors">
+            Maior confiabilidade
+          </h3>
+          <p class="text-sm text-cyan2/80 leading-snug">
+            Oferece conexões mais estáveis e precisas, indispensáveis para operações críticas de saúde e indústria.
+          </p>
+        </div>
+
+        <!-- 5. Maior largura de banda -->
+        <div class="fade-up-item sm:col-span-2 lg:col-span-2 bg-darksurface/90 border border-cyan5/40 hover:border-cyan1 rounded-2xl p-5 transition-all duration-300 group hover:-translate-y-1">
+          <div class="w-12 h-12 rounded-xl bg-cyan5/20 border border-cyan4/40 flex items-center justify-center text-cyan1 mb-4 group-hover:scale-110 group-hover:shadow-[0_0_15px_#B2FFFF] transition-all">
+            <i data-lucide="activity" class="w-6 h-6"></i>
+          </div>
+          <h3 class="text-lg font-bold text-white mb-2 group-hover:text-cyan1 transition-colors">
+            Maior largura de banda
+          </h3>
+          <p class="text-sm text-cyan2/80 leading-snug">
+            Permite transmitir mais dados simultaneamente, suportando múltiplos fluxos massivos de sensores, vídeos em 8K e telemetria de automação sem engasgos.
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <!-- Linha divisória de neon -->
+    <div class="w-full h-px bg-gradient-to-r from-transparent via-cyan4/50 to-transparent my-8"></div>
+
+    <!-- =======================================================================
+         SEÇÃO 2: QUAIS SÃO AS DIFERENÇAS ENTRE 4G E 5G? + SHOWROOM SMARTPHONE 3D
+         (Com os efeitos visuais interativos envolvendo celulares solicitados pelo usuário)
+         ======================================================================= -->
+    <section class="poster-section my-12">
+      <div class="flex items-center gap-3 mb-4">
+        <div class="p-2.5 rounded-xl bg-cyan5/20 border border-cyan4 text-cyan1">
+          <i data-lucide="smartphone" class="w-6 h-6"></i>
+        </div>
+        <div>
+          <span class="text-xs font-mono uppercase tracking-widest text-cyan4 font-bold">Salto Geracional de Performance</span>
+          <h2 class="text-2xl sm:text-3xl font-display font-extrabold text-white">
+            Quais são as diferenças entre 4G e 5G?
+          </h2>
+        </div>
+      </div>
+
+      <p class="text-sm sm:text-base text-cyan2/90 mb-8 max-w-3xl">
+        Interaja com o <span class="text-cyan1 font-semibold">Smartphone 5G Holográfico</span> abaixo para testar em tempo real as taxas de velocidade e a latência de ambas as tecnologias.
+      </p>
+
+      <!-- Layout em 2 Colunas: Smartphone 3D Interativo à esquerda + Tabela Comparativa Oficial à direita -->
+      <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center">
+
+        <!-- COLUNA DO SMARTPHONE INTERATIVO (EFEITOS VISUAIS) -->
+        <div class="lg:col-span-5 flex flex-col items-center justify-center relative phone-mockup-wrapper py-6" id="phone-container">
+          <!-- Ondas de Sinal 5G concêntricas emanando do celular -->
+          <div class="signal-circle top-1/2 left-1/2"></div>
+          <div class="signal-circle top-1/2 left-1/2" style="animation-delay: 1s;"></div>
+          <div class="signal-circle top-1/2 left-1/2" style="animation-delay: 2s;"></div>
+
+          <!-- O Smartphone Realista 3D -->
+          <div class="phone-mockup" id="phone-mockup">
+            <!-- Notch & Sensor frontal -->
+            <div class="phone-speaker"></div>
+            <div class="phone-camera"></div>
+
+            <!-- Tela do Celular (HUD Interativo) -->
+            <div class="phone-screen p-4 flex flex-col justify-between text-left">
+              <!-- Barra de Status Superior do Celular -->
+              <div>
+                <div class="flex items-center justify-between text-[11px] font-mono text-cyan3 pb-2 border-b border-cyan5/30 mb-3">
+                  <span class="font-bold text-white">10:35</span>
+                  <div class="flex items-center gap-1.5">
+                    <span class="px-1.5 py-0.5 rounded bg-cyan5 text-darkbase font-extrabold text-[9px]">5G SA</span>
+                    <i data-lucide="wifi" class="w-3.5 h-3.5 text-cyan1"></i>
+                    <i data-lucide="battery-charging" class="w-3.5 h-3.5 text-cyan1"></i>
+                  </div>
+                </div>
+
+                <!-- Banner de Alerta Preditivo (Disparado pelo simulador da indústria) -->
+                <div id="phone-alert-banner" class="hidden mb-3 p-2.5 rounded-xl bg-cyan5/30 border border-cyan1 shadow-[0_0_15px_#59DDDD]">
+                  <div class="flex items-center gap-1.5 text-cyan1 text-[11px] font-bold">
+                    <i data-lucide="bell-ring" class="w-3.5 h-3.5 animate-bounce"></i>
+                    ALERTA INDUSTRIAL 5G
+                  </div>
+                  <p class="text-[10px] text-white mt-1 leading-tight">
+                    Sensor da Máquina detectou anomalia. Manutenção preditiva acionada com sucesso!
+                  </p>
+                </div>
+
+                <!-- Velocímetro / HUD do Speedtest 4G vs 5G -->
+                <div id="speedtest-hud-card" class="bg-darksurface/90 border border-cyan5/40 hover:border-cyan1 rounded-xl p-2.5 text-center mb-3 cursor-pointer transition-all" title="Toque no card ou no botão abaixo para testar">
+                  <div class="flex items-center justify-between text-[10px] uppercase font-mono tracking-wider text-cyan4 font-bold mb-2">
+                    <span>Teste de Banda</span>
+                    <span class="text-cyan1 font-extrabold flex items-center gap-1">
+                      <span class="w-1.5 h-1.5 rounded-full bg-cyan1 animate-ping"></span>
+                      4G vs 5G
+                    </span>
+                  </div>
+                  
+                  <!-- Dois Mini Velocímetros Lado a Lado -->
+                  <div class="grid grid-cols-2 gap-2">
+                    <!-- Medidor 4G -->
+                    <div class="bg-darkbase/80 p-2 rounded-lg border border-cyan5/20 flex flex-col items-center">
+                      <span class="text-[9px] font-mono font-bold text-gray-300">REDE 4G+</span>
+                      <div class="relative w-20 h-12 overflow-hidden flex items-end justify-center my-1">
+                        <div class="w-18 h-18 rounded-full border-2 border-gray-600 border-t-gray-400 transform -rotate-45"></div>
+                        <div id="needle-4g" class="speed-needle absolute bottom-0 w-0.5 h-10 bg-gray-300 rounded-full" style="transform: rotate(-90deg);"></div>
+                      </div>
+                      <span id="val-speed-4g" class="text-[11px] font-black text-gray-300 font-mono">0 Mbps</span>
+                      <span class="text-[8px] text-gray-400 font-mono">Latência: <b id="val-latency-4g" class="text-gray-300">-- ms</b></span>
+                    </div>
+
+                    <!-- Medidor 5G -->
+                    <div class="bg-cyan5/10 p-2 rounded-lg border border-cyan4/50 flex flex-col items-center shadow-[0_0_10px_rgba(89,221,221,0.2)]">
+                      <span class="text-[9px] font-mono font-extrabold text-cyan1">NOVO 5G</span>
+                      <div class="relative w-20 h-12 overflow-hidden flex items-end justify-center my-1">
+                        <div class="w-18 h-18 rounded-full border-2 border-cyan5/30 border-t-cyan3 border-r-cyan1 transform -rotate-45"></div>
+                        <div id="needle-5g" class="speed-needle absolute bottom-0 w-0.5 h-10 bg-cyan1 rounded-full shadow-[0_0_8px_#B2FFFF]" style="transform: rotate(-90deg);"></div>
+                      </div>
+                      <span id="val-speed-5g" class="text-[11px] font-black text-cyan1 font-mono">0 Gbps</span>
+                      <span class="text-[8px] text-cyan3 font-mono">Latência: <b id="val-latency-5g" class="text-cyan1">-- ms</b></span>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Radar de Dispositivos IoT Conectados ao Smartphone -->
+                <div class="bg-darksurface/90 border border-cyan5/40 rounded-xl p-3">
+                  <div class="flex items-center justify-between text-[10px] font-mono mb-2">
+                    <span class="text-cyan3 uppercase font-bold flex items-center gap-1">
+                      <span class="w-1.5 h-1.5 rounded-full bg-cyan1 animate-ping"></span>
+                      Radar de Sensores IoT
+                    </span>
+                    <span class="text-gray-400">5G Standalone</span>
+                  </div>
+
+                  <!-- Campo de Radar com Varredura -->
+                  <div class="relative w-full h-24 rounded-lg bg-darkbase border border-cyan5/30 overflow-hidden flex items-center justify-center">
+                    <div class="absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(54,198,198,0.15)_0%,transparent_70%)]"></div>
+                    <div class="w-16 h-16 rounded-full border border-cyan5/30 absolute"></div>
+                    <div class="w-8 h-8 rounded-full border border-cyan5/40 absolute"></div>
+                    <!-- Linha giratória de varredura -->
+                    <div class="radar-sweep absolute w-full h-full bg-[conic-gradient(from_0deg,transparent_0deg,rgba(178,255,255,0.35)_360deg)] opacity-70"></div>
+                    
+                    <!-- Pontos de Dispositivos Conectados -->
+                    <span class="absolute top-4 left-6 w-2 h-2 rounded-full bg-cyan1 animate-pulse" title="Sensor Industrial"></span>
+                    <span class="absolute bottom-5 right-8 w-2 h-2 rounded-full bg-cyan4" title="Smart City"></span>
+                    <span class="absolute top-6 right-10 w-1.5 h-1.5 rounded-full bg-cyan2" title="Carro Autônomo"></span>
+                    <span class="text-[10px] font-mono text-cyan1/90 z-10 font-bold bg-darkbase/80 px-1 rounded">1.000.000 nós/km²</span>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Botão Interativo do Celular -->
+              <div class="pt-3 relative z-30">
+                <button id="btn-run-speed-test" onclick="window.run5GSpeedTest()" type="button" class="w-full py-2.5 rounded-xl bg-gradient-to-r from-cyan5 via-cyan4 to-cyan1 text-darkbase font-display font-extrabold text-xs uppercase tracking-wider shadow-[0_0_15px_#59DDDD] hover:brightness-110 active:scale-95 cursor-pointer transition-all flex items-center justify-center gap-1.5 select-none">
+                  <i data-lucide="play" class="w-3.5 h-3.5 fill-current pointer-events-none"></i>
+                  <span class="pointer-events-none">Testar 4G vs 5G</span>
+                </button>
+                <div id="speedtest-status" class="text-[10px] text-center text-cyan3 font-mono mt-1.5 cursor-pointer" onclick="window.run5GSpeedTest()">
+                  Toque para executar medição comparativa
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- COLUNA DA TABELA E DADOS COMPARATIVOS (DO PDF) -->
+        <div class="lg:col-span-7 flex flex-col justify-center">
+          <!-- Tabela Comparativa Oficial -->
+          <div class="bg-darkcard backdrop-blur-md border border-cyan5/50 rounded-2xl overflow-hidden box-glow mb-6">
+            <div class="px-5 py-3.5 bg-gradient-to-r from-cyan5/20 via-cyan4/10 to-transparent border-b border-cyan5/30 flex flex-wrap items-center justify-between gap-3">
+              <div>
+                <span class="font-display font-bold text-white text-base block">Matriz Comparativa de Desempenho</span>
+                <span class="text-[11px] font-mono text-cyan3 uppercase font-semibold">Fonte: Pesquisa Oficial</span>
+              </div>
+              <!-- Botão Alternativo de Disparo do Speedtest -->
+              <button id="btn-run-speed-test-external" onclick="window.run5GSpeedTest()" type="button" class="py-1.5 px-3.5 rounded-xl bg-gradient-to-r from-cyan5 via-cyan4 to-cyan1 text-darkbase font-display font-black text-xs uppercase tracking-wider shadow-[0_0_15px_#59DDDD] hover:brightness-110 active:scale-95 cursor-pointer transition-all flex items-center gap-1.5">
+                <i data-lucide="zap" class="w-3.5 h-3.5 fill-current pointer-events-none"></i>
+                <span class="pointer-events-none">Executar Teste 4G vs 5G</span>
+              </button>
+            </div>
+
+            <div class="overflow-x-auto">
+              <table class="w-full text-left text-sm">
+                <thead>
+                  <tr class="border-b border-cyan5/30 bg-darksurface/60 text-xs font-mono uppercase text-cyan3">
+                    <th class="py-3.5 px-4 font-bold">Característica</th>
+                    <th class="py-3.5 px-4 font-bold text-gray-300">4G</th>
+                    <th class="py-3.5 px-4 font-bold text-cyan1 bg-cyan5/15">5G (Nova Geração)</th>
+                  </tr>
+                </thead>
+                <tbody class="divide-y divide-cyan5/20 font-light">
+                  <!-- Velocidade -->
+                  <tr class="hover:bg-cyan5/10 transition-colors">
+                    <td class="py-3 px-4 font-semibold text-white flex items-center gap-2">
+                      <i data-lucide="gauge" class="w-4 h-4 text-cyan4"></i>
+                      Velocidade
+                    </td>
+                    <td class="py-3 px-4 text-gray-300 font-mono">Até 450Mbps (4G+)</td>
+                    <td class="py-3 px-4 text-cyan1 font-mono font-bold bg-cyan5/15">
+                      Pode chegar a 10Gbps ou mais
+                    </td>
+                  </tr>
+
+                  <!-- Latência -->
+                  <tr class="hover:bg-cyan5/10 transition-colors">
+                    <td class="py-3 px-4 font-semibold text-white flex items-center gap-2">
+                      <i data-lucide="clock" class="w-4 h-4 text-cyan4"></i>
+                      Latência
+                    </td>
+                    <td class="py-3 px-4 text-gray-300 font-mono">Aproximadamente 50ms</td>
+                    <td class="py-3 px-4 text-cyan1 font-mono font-bold bg-cyan5/15">
+                      Pode chegar a 1 ms
+                    </td>
+                  </tr>
+
+                  <!-- Capacidade -->
+                  <tr class="hover:bg-cyan5/10 transition-colors">
+                    <td class="py-3 px-4 font-semibold text-white flex items-center gap-2">
+                      <i data-lucide="layers" class="w-4 h-4 text-cyan4"></i>
+                      Capacidade
+                    </td>
+                    <td class="py-3 px-4 text-gray-300">Menor quantidade de dispositivos conectados</td>
+                    <td class="py-3 px-4 text-cyan1 font-bold bg-cyan5/15">
+                      Suporta muito mais dispositivos
+                    </td>
+                  </tr>
+
+                  <!-- Cobertura -->
+                  <tr class="hover:bg-cyan5/10 transition-colors">
+                    <td class="py-3 px-4 font-semibold text-white flex items-center gap-2">
+                      <i data-lucide="map-pin" class="w-4 h-4 text-cyan4"></i>
+                      Cobertura
+                    </td>
+                    <td class="py-3 px-4 text-gray-300">Mais ampla e estabelecida</td>
+                    <td class="py-3 px-4 text-cyan2 bg-cyan5/15">
+                      Ainda em expansão
+                    </td>
+                  </tr>
+
+                  <!-- Infraestrutura -->
+                  <tr class="hover:bg-cyan5/10 transition-colors">
+                    <td class="py-3 px-4 font-semibold text-white flex items-center gap-2">
+                      <i data-lucide="antenna" class="w-4 h-4 text-cyan4"></i>
+                      Infraestrutura
+                    </td>
+                    <td class="py-3 px-4 text-gray-300">Utiliza antenas já estabelecidas</td>
+                    <td class="py-3 px-4 text-cyan2 bg-cyan5/15">
+                      Exige novas antenas e tecnologias
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+          <!-- Destaque Conclusivo da Pesquisa -->
+          <div class="fade-up-item p-4 sm:p-5 rounded-xl bg-gradient-to-r from-cyan5/20 via-cyan4/10 to-transparent border-l-4 border-cyan1 text-sm text-cyan1 leading-relaxed">
+            <span class="font-bold text-white uppercase text-xs block mb-1 font-mono tracking-wider">Conclusão da Pesquisa:</span>
+            "A principal diferença é que o 5G oferece <strong>maior velocidade</strong>, <strong>menor tempo de resposta</strong> e <strong>capacidade para conectar muito mais dispositivos</strong>, favorecendo aplicações que precisam de comunicação em tempo real."
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- Linha divisória de neon -->
+    <div class="w-full h-px bg-gradient-to-r from-transparent via-cyan4/50 to-transparent my-8"></div>
+
+    <!-- =======================================================================
+         SEÇÃO 3: COMO O 5G BENEFICIA A IOT?
+         ======================================================================= -->
+    <section class="poster-section my-12">
+      <div class="flex items-center gap-3 mb-4">
+        <div class="p-2.5 rounded-xl bg-cyan5/20 border border-cyan4 text-cyan1">
+          <i data-lucide="network" class="w-6 h-6"></i>
+        </div>
+        <div>
+          <span class="text-xs font-mono uppercase tracking-widest text-cyan4 font-bold">Convergência Tecnológica</span>
+          <h2 class="text-2xl sm:text-3xl font-display font-extrabold text-white">
+            Como o 5G beneficia a IoT?
+          </h2>
+        </div>
+      </div>
+
+      <div class="fade-up-item bg-darkcard backdrop-blur-md border border-cyan5/40 rounded-2xl p-6 sm:p-7 mb-8 box-glow">
+        <p class="text-base sm:text-lg text-cyan1 font-normal leading-relaxed">
+          "O 5G impulsiona a <strong>Internet das Coisas (IoT)</strong> porque permite que diversos dispositivos conectados troquem informações rapidamente e com pouca demora."
+        </p>
+      </div>
+
+      <!-- 5 Pilares de Benefício (Exatos da Pesquisa) -->
+      <div class="grid grid-cols-1 md:grid-cols-5 gap-3.5 mb-8">
+        <!-- Pilar 1 -->
+        <div class="fade-up-item bg-darksurface/90 border border-cyan5/40 hover:border-cyan1 rounded-2xl p-4 text-center transition-all duration-300 group hover:-translate-y-1">
+          <div class="w-10 h-10 mx-auto rounded-xl bg-cyan5/20 border border-cyan4/40 flex items-center justify-center text-cyan1 mb-3 group-hover:scale-110 transition-transform">
+            <i data-lucide="cpu" class="w-5 h-5"></i>
+          </div>
+          <span class="text-xs font-bold text-white block mb-1">Conectar Sensores</span>
+          <p class="text-[11px] text-cyan2/80 leading-snug">
+            Conectar muitos sensores e equipamentos simultaneamente.
+          </p>
+        </div>
+
+        <!-- Pilar 2 -->
+        <div class="fade-up-item bg-darksurface/90 border border-cyan5/40 hover:border-cyan1 rounded-2xl p-4 text-center transition-all duration-300 group hover:-translate-y-1">
+          <div class="w-10 h-10 mx-auto rounded-xl bg-cyan5/20 border border-cyan4/40 flex items-center justify-center text-cyan1 mb-3 group-hover:scale-110 transition-transform">
+            <i data-lucide="eye" class="w-5 h-5"></i>
+          </div>
+          <span class="text-xs font-bold text-white block mb-1">Tempo Real</span>
+          <p class="text-[11px] text-cyan2/80 leading-snug">
+            Monitorar dispositivos em tempo real sem atrasos de sinal.
+          </p>
+        </div>
+
+        <!-- Pilar 3 -->
+        <div class="fade-up-item bg-darksurface/90 border border-cyan5/40 hover:border-cyan1 rounded-2xl p-4 text-center transition-all duration-300 group hover:-translate-y-1">
+          <div class="w-10 h-10 mx-auto rounded-xl bg-cyan5/20 border border-cyan4/40 flex items-center justify-center text-cyan1 mb-3 group-hover:scale-110 transition-transform">
+            <i data-lucide="git-merge" class="w-5 h-5"></i>
+          </div>
+          <span class="text-xs font-bold text-white block mb-1">M2M</span>
+          <p class="text-[11px] text-cyan2/80 leading-snug">
+            Melhorar a comunicação direta entre máquinas sem gargalos.
+          </p>
+        </div>
+
+        <!-- Pilar 4 -->
+        <div class="fade-up-item bg-darksurface/90 border border-cyan5/40 hover:border-cyan1 rounded-2xl p-4 text-center transition-all duration-300 group hover:-translate-y-1">
+          <div class="w-10 h-10 mx-auto rounded-xl bg-cyan5/20 border border-cyan4/40 flex items-center justify-center text-cyan1 mb-3 group-hover:scale-110 transition-transform">
+            <i data-lucide="cog" class="w-5 h-5"></i>
+          </div>
+          <span class="text-xs font-bold text-white block mb-1">Automatizar</span>
+          <p class="text-[11px] text-cyan2/80 leading-snug">
+            Automatizar processos com muito mais eficiência e precisão.
+          </p>
+        </div>
+
+        <!-- Pilar 5 -->
+        <div class="fade-up-item bg-darksurface/90 border border-cyan5/40 hover:border-cyan1 rounded-2xl p-4 text-center transition-all duration-300 group hover:-translate-y-1">
+          <div class="w-10 h-10 mx-auto rounded-xl bg-cyan5/20 border border-cyan4/40 flex items-center justify-center text-cyan1 mb-3 group-hover:scale-110 transition-transform">
+            <i data-lucide="fast-forward" class="w-5 h-5"></i>
+          </div>
+          <span class="text-xs font-bold text-white block mb-1">Zero Atrasos</span>
+          <p class="text-[11px] text-cyan2/80 leading-snug">
+            Reduzir atrasos no envio e recebimento crítico de dados.
+          </p>
+        </div>
+      </div>
+
+      <!-- Frase Síntese da Pesquisa -->
+      <div class="fade-up-item text-center p-4 rounded-xl bg-cyan5/15 border border-cyan3/30 text-white font-medium text-sm sm:text-base">
+        ✨ <em>"Assim, o 5G torna possível desenvolver sistemas inteligentes mais rápidos, conectados e eficientes."</em>
+      </div>
+    </section>
+
+    <!-- Linha divisória de neon -->
+    <div class="w-full h-px bg-gradient-to-r from-transparent via-cyan4/50 to-transparent my-8"></div>
+
+    <!-- =======================================================================
+         SEÇÃO 4: QUAIS SÃO AS PRINCIPAIS APLICAÇÕES DO 5G NA IOT?
+         (Setores em destaque com a paleta da imagem e ícones modernos)
+         ======================================================================= -->
+    <section class="poster-section my-12">
+      <div class="flex items-center gap-3 mb-4">
+        <div class="p-2.5 rounded-xl bg-cyan5/20 border border-cyan4 text-cyan1">
+          <i data-lucide="layout-grid" class="w-6 h-6"></i>
+        </div>
+        <div>
+          <span class="text-xs font-mono uppercase tracking-widest text-cyan4 font-bold">Ecossistema em Expansão</span>
+          <h2 class="text-2xl sm:text-3xl font-display font-extrabold text-white">
+            Quais são as principais aplicações do 5G na IoT?
+          </h2>
+        </div>
+      </div>
+
+      <p class="text-sm text-cyan2/90 mb-6">
+        O 5G pode ser utilizado em diferentes setores estratégicos da sociedade e da economia:
+      </p>
+
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
+        <!-- 1. Saúde -->
+        <div class="fade-up-item bg-darkcard border border-cyan5/40 hover:border-cyan1 rounded-2xl p-6 transition-all duration-300 hover:shadow-[0_0_20px_rgba(89,221,221,0.25)] flex flex-col justify-between">
+          <div>
+            <div class="flex items-center justify-between mb-4">
+              <span class="px-2.5 py-1 rounded-lg bg-cyan5/20 border border-cyan4/40 text-xs font-mono font-bold text-cyan1">01</span>
+              <div class="w-10 h-10 rounded-xl bg-cyan5/20 flex items-center justify-center text-cyan1">
+                <i data-lucide="heart-pulse" class="w-5 h-5"></i>
+              </div>
+            </div>
+            <h3 class="text-lg font-bold text-white mb-2">Saúde</h3>
+            <p class="text-sm text-cyan2/80 leading-relaxed">
+              Monitoramento de pacientes por dispositivos inteligentes e realização de procedimentos médicos remotos.
+            </p>
+          </div>
+          <div class="mt-4 pt-3 border-t border-cyan5/20 text-[11px] font-mono text-cyan3 flex items-center gap-1.5">
+            <i data-lucide="activity" class="w-3.5 h-3.5"></i> Telemedicina &amp; Cirurgia Robótica
+          </div>
+        </div>
+
+        <!-- 2. Indústria -->
+        <div class="fade-up-item bg-darkcard border border-cyan5/40 hover:border-cyan1 rounded-2xl p-6 transition-all duration-300 hover:shadow-[0_0_20px_rgba(89,221,221,0.25)] flex flex-col justify-between">
+          <div>
+            <div class="flex items-center justify-between mb-4">
+              <span class="px-2.5 py-1 rounded-lg bg-cyan5/20 border border-cyan4/40 text-xs font-mono font-bold text-cyan1">02</span>
+              <div class="w-10 h-10 rounded-xl bg-cyan5/20 flex items-center justify-center text-cyan1">
+                <i data-lucide="factory" class="w-5 h-5"></i>
+              </div>
+            </div>
+            <h3 class="text-lg font-bold text-white mb-2">Indústria</h3>
+            <p class="text-sm text-cyan2/80 leading-relaxed">
+              Máquinas e sensores conectados que monitoram equipamentos e automatizam processos (Indústria 4.0).
+            </p>
+          </div>
+          <div class="mt-4 pt-3 border-t border-cyan5/20 text-[11px] font-mono text-cyan3 flex items-center gap-1.5">
+            <i data-lucide="wrench" class="w-3.5 h-3.5"></i> Manutenção Preditiva Instantânea
+          </div>
+        </div>
+
+        <!-- 3. Agricultura -->
+        <div class="fade-up-item bg-darkcard border border-cyan5/40 hover:border-cyan1 rounded-2xl p-6 transition-all duration-300 hover:shadow-[0_0_20px_rgba(89,221,221,0.25)] flex flex-col justify-between">
+          <div>
+            <div class="flex items-center justify-between mb-4">
+              <span class="px-2.5 py-1 rounded-lg bg-cyan5/20 border border-cyan4/40 text-xs font-mono font-bold text-cyan1">03</span>
+              <div class="w-10 h-10 rounded-xl bg-cyan5/20 flex items-center justify-center text-cyan1">
+                <i data-lucide="sprout" class="w-5 h-5"></i>
+              </div>
+            </div>
+            <h3 class="text-lg font-bold text-white mb-2">Agricultura</h3>
+            <p class="text-sm text-cyan2/80 leading-relaxed">
+              Sensores que acompanham a umidade do solo, temperatura e necessidade de irrigação automatizada.
+            </p>
+          </div>
+          <div class="mt-4 pt-3 border-t border-cyan5/20 text-[11px] font-mono text-cyan3 flex items-center gap-1.5">
+            <i data-lucide="droplet" class="w-3.5 h-3.5"></i> Smart Agro &amp; Drones Autônomos
+          </div>
+        </div>
+
+        <!-- 4. Cidades inteligentes -->
+        <div class="fade-up-item bg-darkcard border border-cyan5/40 hover:border-cyan1 rounded-2xl p-6 transition-all duration-300 hover:shadow-[0_0_20px_rgba(89,221,221,0.25)] flex flex-col justify-between">
+          <div>
+            <div class="flex items-center justify-between mb-4">
+              <span class="px-2.5 py-1 rounded-lg bg-cyan5/20 border border-cyan4/40 text-xs font-mono font-bold text-cyan1">04</span>
+              <div class="w-10 h-10 rounded-xl bg-cyan5/20 flex items-center justify-center text-cyan1">
+                <i data-lucide="building-2" class="w-5 h-5"></i>
+              </div>
+            </div>
+            <h3 class="text-lg font-bold text-white mb-2">Cidades inteligentes</h3>
+            <p class="text-sm text-cyan2/80 leading-relaxed">
+              Semáforos inteligentes, monitoramento do trânsito em tempo real e controle da iluminação pública.
+            </p>
+          </div>
+          <div class="mt-4 pt-3 border-t border-cyan5/20 text-[11px] font-mono text-cyan3 flex items-center gap-1.5">
+            <i data-lucide="traffic-cone" class="w-3.5 h-3.5"></i> Mobilidade Urbana Conectada
+          </div>
+        </div>
+
+        <!-- 5. Transportes -->
+        <div class="fade-up-item bg-darkcard border border-cyan5/40 hover:border-cyan1 rounded-2xl p-6 transition-all duration-300 hover:shadow-[0_0_20px_rgba(89,221,221,0.25)] flex flex-col justify-between">
+          <div>
+            <div class="flex items-center justify-between mb-4">
+              <span class="px-2.5 py-1 rounded-lg bg-cyan5/20 border border-cyan4/40 text-xs font-mono font-bold text-cyan1">05</span>
+              <div class="w-10 h-10 rounded-xl bg-cyan5/20 flex items-center justify-center text-cyan1">
+                <i data-lucide="car" class="w-5 h-5"></i>
+              </div>
+            </div>
+            <h3 class="text-lg font-bold text-white mb-2">Transportes</h3>
+            <p class="text-sm text-cyan2/80 leading-relaxed">
+              Comunicação entre veículos e infraestrutura (V2X), contribuindo para o desenvolvimento de carros autônomos.
+            </p>
+          </div>
+          <div class="mt-4 pt-3 border-t border-cyan5/20 text-[11px] font-mono text-cyan3 flex items-center gap-1.5">
+            <i data-lucide="navigation" class="w-3.5 h-3.5"></i> Veículos Autônomos &amp; V2X
+          </div>
+        </div>
+
+        <!-- 6. Residências -->
+        <div class="fade-up-item bg-darkcard border border-cyan5/40 hover:border-cyan1 rounded-2xl p-6 transition-all duration-300 hover:shadow-[0_0_20px_rgba(89,221,221,0.25)] flex flex-col justify-between">
+          <div>
+            <div class="flex items-center justify-between mb-4">
+              <span class="px-2.5 py-1 rounded-lg bg-cyan5/20 border border-cyan4/40 text-xs font-mono font-bold text-cyan1">06</span>
+              <div class="w-10 h-10 rounded-xl bg-cyan5/20 flex items-center justify-center text-cyan1">
+                <i data-lucide="home" class="w-5 h-5"></i>
+              </div>
+            </div>
+            <h3 class="text-lg font-bold text-white mb-2">Residências</h3>
+            <p class="text-sm text-cyan2/80 leading-relaxed">
+              Controle de iluminação, câmeras, eletrodomésticos e sistemas de segurança inteligentes.
+            </p>
+          </div>
+          <div class="mt-4 pt-3 border-t border-cyan5/20 text-[11px] font-mono text-cyan3 flex items-center gap-1.5">
+            <i data-lucide="shield" class="w-3.5 h-3.5"></i> Casas Conectadas &amp; Smart Living
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Linha divisória de neon -->
+    <div class="w-full h-px bg-gradient-to-r from-transparent via-cyan4/50 to-transparent my-8"></div>
+
+    <!-- =======================================================================
+         SEÇÃO 5: 5G, INTELIGÊNCIA ARTIFICIAL E AUTOMAÇÃO
+         + DEMONSTRAÇÃO PRÁTICA REAL EM IoT (O ponto alto solicitado pelo usuário!)
+         ======================================================================= -->
+    <section class="poster-section my-12">
+      <div class="flex items-center gap-3 mb-4">
+        <div class="p-2.5 rounded-xl bg-cyan5/20 border border-cyan4 text-cyan1 shadow-[0_0_15px_#B2FFFF]">
+          <i data-lucide="bot" class="w-6 h-6"></i>
+        </div>
+        <div>
+          <span class="text-xs font-mono uppercase tracking-widest text-cyan4 font-bold">Aplicação Real &amp; Demonstração Prática</span>
+          <h2 class="text-2xl sm:text-3xl font-display font-extrabold text-white">
+            Como o 5G se relaciona com a inteligência artificial e a automação?
+          </h2>
+        </div>
+      </div>
+
+      <!-- Texto Teórico Oficial da Pesquisa -->
+      <div class="fade-up-item bg-darkcard backdrop-blur-md border border-cyan5/40 rounded-2xl p-6 sm:p-7 mb-8">
+        <p class="text-base text-cyan1 leading-relaxed mb-3">
+          "O 5G permite que dispositivos e sensores enviem grandes quantidades de dados rapidamente para sistemas que utilizam <strong>Inteligência Artificial (IA)</strong>."
+        </p>
+        <p class="text-sm text-cyan2/90 leading-relaxed">
+          "A IA analisa essas informações, <strong>identifica padrões e pode tomar decisões automaticamente</strong>. Com isso, é possível criar sistemas que monitoram situações, identificam problemas e executam tarefas com pouca ou nenhuma intervenção humana."
+        </p>
+      </div>
+
+      <!-- SIMULADOR INTERATIVO: DEMONSTRAÇÃO REAL NA INDÚSTRIA (CONFORME PESQUISA) -->
+      <div class="fade-up-item border-2 border-cyan4/60 rounded-3xl bg-gradient-to-b from-darksurface to-darkbase p-6 sm:p-8 box-glow-strong relative overflow-hidden">
+        
+        <!-- Badge da Demonstração -->
+        <div class="flex flex-wrap items-center justify-between gap-3 pb-4 border-b border-cyan5/30 mb-6">
+          <div class="flex items-center gap-2">
+            <span class="w-3 h-3 rounded-full bg-cyan1 animate-pulse shadow-[0_0_10px_#B2FFFF]"></span>
+            <span class="font-display font-black text-white text-lg tracking-wide uppercase">
+              Demonstração Prática: Manutenção Preditiva Industrial
+            </span>
+          </div>
+          <span class="px-3 py-1 rounded-full bg-cyan5/20 border border-cyan3/40 text-xs font-mono text-cyan1">
+            Gêmeo Digital 5G + IA + IIoT
+          </span>
+        </div>
+
+        <p class="text-xs sm:text-sm text-cyan2/80 mb-6 italic">
+          "Por exemplo, em uma indústria, sensores conectados pelo 5G podem identificar alterações no funcionamento de uma máquina. A Inteligência Artificial analisa os dados e prevê possíveis falhas, permitindo que a manutenção seja realizada antes que o equipamento pare de funcionar."
+        </p>
+
+        <!-- Painel de Controle e Visualização do Gêmeo Digital -->
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 items-center">
+
+          <!-- 1. Máquina Industrial com Sensores IoT -->
+          <div class="lg:col-span-5 bg-darkcard border border-cyan5/50 rounded-2xl p-5 text-center relative" id="machine-twin-visual">
+            <div class="flex items-center justify-between text-xs font-mono text-cyan3 mb-3">
+              <span class="font-bold flex items-center gap-1.5">
+                <i data-lucide="cpu" class="w-4 h-4 text-cyan1"></i>
+                Turbina / Motor CNC #402
+              </span>
+              <span class="text-green-400 font-bold">ONLINE</span>
+            </div>
+
+            <!-- Gráfico / Desenho Vetorial da Máquina com Sensores -->
+            <div class="relative py-4 flex items-center justify-center">
+              <svg class="w-36 h-36 text-cyan4 animate-spin" style="animation-duration: 12s;" viewBox="0 0 100 100" fill="none" stroke="currentColor">
+                <circle cx="50" cy="50" r="42" stroke-width="4" stroke-dasharray="10 5" class="text-cyan5"></circle>
+                <circle cx="50" cy="50" r="30" stroke-width="3" class="text-cyan3"></circle>
+                <circle cx="50" cy="50" r="14" fill="#36C6C6" class="text-cyan1"></circle>
+                <path d="M50 10 L50 22 M50 78 L50 90 M10 50 L22 50 M78 50 L90 50" stroke-width="4" stroke-linecap="round"></path>
+              </svg>
+
+              <!-- Sensores Indicadores fixados na máquina -->
+              <div class="absolute top-2 right-4 px-2 py-1 rounded bg-darkbase/90 border border-cyan4 text-[10px] font-mono text-cyan1">
+                Sensor 5G: Vibração
+              </div>
+              <div class="absolute bottom-2 left-4 px-2 py-1 rounded bg-darkbase/90 border border-cyan4 text-[10px] font-mono text-cyan1">
+                Sensor 5G: Temperatura
+              </div>
+            </div>
+
+            <!-- Indicadores de Telemetria ao Vivo -->
+            <div class="space-y-2 mt-4 text-left">
+              <div>
+                <div class="flex justify-between text-[11px] font-mono text-gray-300 mb-1">
+                  <span>Espectro de Vibração:</span>
+                  <span class="text-cyan1 font-bold">Limite Máx: 4.5 mm/s</span>
+                </div>
+                <div class="w-full bg-darkbase rounded h-5 p-0.5 overflow-hidden border border-cyan5/30">
+                  <div id="sim-gauge-vib" class="bg-cyan5 h-full rounded transition-all duration-500 text-xs text-black font-mono flex items-center px-2 font-bold" style="width: 18%;">
+                    1.2 mm/s (Estável)
+                  </div>
+                </div>
+              </div>
+
+              <div>
+                <div class="flex justify-between text-[11px] font-mono text-gray-300 mb-1">
+                  <span>Temperatura do Rolamento:</span>
+                  <span class="text-cyan1 font-bold">Limite: 85°C</span>
+                </div>
+                <div class="w-full bg-darkbase rounded h-5 p-0.5 overflow-hidden border border-cyan5/30">
+                  <div id="sim-gauge-temp" class="bg-cyan4 h-full rounded transition-all duration-500 text-xs text-black font-mono flex items-center px-2 font-bold" style="width: 32%;">
+                    38°C (Normal)
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- 2. Linha de Conexão 5G em Tempo Real (Fluxo de Pacotes) -->
+          <div class="lg:col-span-2 flex flex-col items-center justify-center text-center py-2">
+            <span class="text-[10px] font-mono text-cyan3 uppercase tracking-wider block mb-1">Rede 5G NR</span>
+            <div class="w-12 h-12 rounded-full bg-cyan5/20 border border-cyan1 flex items-center justify-center text-cyan1 shadow-[0_0_20px_#B2FFFF] wave-emitter-core mb-2">
+              <i data-lucide="radio-tower" class="w-6 h-6"></i>
+            </div>
+            <div id="sim-latency-display" class="text-xs font-mono text-cyan1 bg-darkbase px-2 py-1 rounded border border-cyan5/40">
+              1.0 ms (Standby)
+            </div>
+            <!-- Linha indicadora de dados -->
+            <div id="sensor-packet-stream" class="w-full h-1 bg-cyan5/30 my-2 relative overflow-hidden rounded">
+              <div class="w-8 h-full bg-cyan1 animate-[ping_1.5s_infinite] rounded"></div>
+            </div>
+          </div>
+
+          <!-- 3. IA de Manutenção & Ação Automatizada -->
+          <div class="lg:col-span-5 bg-darkcard border border-cyan5/50 rounded-2xl p-5 flex flex-col justify-between">
+            <div>
+              <div class="flex items-center justify-between text-xs font-mono text-cyan3 mb-3">
+                <span class="font-bold flex items-center gap-1.5">
+                  <i data-lucide="brain-circuit" class="w-4 h-4 text-cyan1"></i>
+                  Cérebro de Inteligência Artificial
+                </span>
+                <span class="text-cyan1">Machine Learning</span>
+              </div>
+
+              <!-- Cartão Dinâmico de Diagnóstico da IA -->
+              <div id="sim-ai-status" class="bg-darksurface/90 border border-cyan5/30 rounded-xl p-4 mb-4 min-h-[90px] flex flex-col justify-center">
+                <div class="flex items-center gap-2 text-cyan1 font-bold mb-1 text-sm">
+                  <span class="w-2.5 h-2.5 rounded-full bg-cyan4"></span>
+                  Sistema Operando em Conformidade
+                </div>
+                <p class="text-xs text-cyan2/80">
+                  Sensores transmitindo telemetria contínua via 5G para modelo preditivo em nuvem.
+                </p>
+              </div>
+
+              <div class="text-[11px] text-gray-300 font-mono space-y-1 mb-4">
+                <div class="flex justify-between">
+                  <span>Taxa de Amostragem:</span>
+                  <span class="text-cyan1 font-bold">10.000 leituras/seg</span>
+                </div>
+                <div class="flex justify-between">
+                  <span>Acurácia Preditiva:</span>
+                  <span class="text-cyan1 font-bold">99.7%</span>
+                </div>
+              </div>
+            </div>
+
+            <!-- Botões de Ação do Teste -->
+            <div class="grid grid-cols-2 gap-2 pt-2 border-t border-cyan5/20">
+              <button id="btn-trigger-fault" class="py-2.5 px-3 rounded-xl bg-gradient-to-r from-red-600/80 to-amber-600/80 hover:from-red-600 hover:to-amber-500 text-white font-bold text-xs uppercase tracking-wider shadow-lg transition-all flex items-center justify-center gap-1">
+                <i data-lucide="alert-triangle" class="w-3.5 h-3.5"></i>
+                <span>Simular Anomalia</span>
+              </button>
+              <button id="btn-reset-normal" class="py-2.5 px-3 rounded-xl bg-cyan5/20 hover:bg-cyan5/30 border border-cyan4 text-cyan1 font-bold text-xs uppercase tracking-wider transition-all flex items-center justify-center gap-1">
+                <i data-lucide="rotate-ccw" class="w-3.5 h-3.5"></i>
+                <span>Normalizar</span>
+              </button>
+            </div>
+          </div>
+
+        </div>
+
+        <!-- Conclusão da Demonstração (Citação da Pesquisa) -->
+        <div class="mt-6 pt-4 border-t border-cyan5/30 text-center">
+          <p class="text-sm font-semibold text-cyan1">
+            "Dessa forma, a combinação entre 5G, IoT, IA e automação torna os processos mais inteligentes, rápidos e eficientes."
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <!-- Linha divisória de neon -->
+    <div class="w-full h-px bg-gradient-to-r from-transparent via-cyan4/50 to-transparent my-8"></div>
+
+    <!-- =======================================================================
+         SEÇÃO 6: QUAIS SÃO OS DESAFIOS DESTA TECNOLOGIA?
+         ======================================================================= -->
+    <section class="poster-section my-12">
+      <div class="flex items-center gap-3 mb-4">
+        <div class="p-2.5 rounded-xl bg-cyan5/20 border border-cyan4 text-cyan1">
+          <i data-lucide="alert-circle" class="w-6 h-6"></i>
+        </div>
+        <div>
+          <span class="text-xs font-mono uppercase tracking-widest text-cyan4 font-bold">Análise Crítica e Cenário de Implementação</span>
+          <h2 class="text-2xl sm:text-3xl font-display font-extrabold text-white">
+            Quais são os desafios desta tecnologia?
+          </h2>
+        </div>
+      </div>
+
+      <p class="text-sm text-cyan2/90 mb-6">
+        Apesar dos inúmeros benefícios, a implantação em larga escala do 5G apresenta desafios estruturais importantes:
+      </p>
+
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+        <!-- 1. Alto custo -->
+        <div class="fade-up-item bg-darksurface/90 border border-cyan5/30 hover:border-cyan4 rounded-2xl p-5 transition-all">
+          <div class="flex items-center gap-3 mb-2">
+            <div class="p-2 rounded-lg bg-cyan5/20 text-cyan1">
+              <i data-lucide="coins" class="w-4 h-4"></i>
+            </div>
+            <h3 class="text-base font-bold text-white">Alto custo</h3>
+          </div>
+          <p class="text-xs text-cyan2/80 leading-relaxed">
+            Exige investimentos vultosos em novas antenas de alta frequência, equipamentos e atualização da infraestrutura de telecomunicações.
+          </p>
+        </div>
+
+        <!-- 2. Cobertura -->
+        <div class="fade-up-item bg-darksurface/90 border border-cyan5/30 hover:border-cyan4 rounded-2xl p-5 transition-all">
+          <div class="flex items-center gap-3 mb-2">
+            <div class="p-2 rounded-lg bg-cyan5/20 text-cyan1">
+              <i data-lucide="signal-zero" class="w-4 h-4"></i>
+            </div>
+            <h3 class="text-base font-bold text-white">Cobertura</h3>
+          </div>
+          <p class="text-xs text-cyan2/80 leading-relaxed">
+            O sinal de ondas milimétricas ainda não está disponível em todas as regiões, concentrando-se inicialmente em centros urbanos densos.
+          </p>
+        </div>
+
+        <!-- 3. Segurança -->
+        <div class="fade-up-item bg-darksurface/90 border border-cyan5/30 hover:border-cyan4 rounded-2xl p-5 transition-all">
+          <div class="flex items-center gap-3 mb-2">
+            <div class="p-2 rounded-lg bg-cyan5/20 text-cyan1">
+              <i data-lucide="lock" class="w-4 h-4"></i>
+            </div>
+            <h3 class="text-base font-bold text-white">Segurança</h3>
+          </div>
+          <p class="text-xs text-cyan2/80 leading-relaxed">
+            O aumento exponencial de dispositivos conectados amplia a superfície de ataque para invasões cibernéticas e vazamento de dados confidenciais.
+          </p>
+        </div>
+
+        <!-- 4. Compatibilidade -->
+        <div class="fade-up-item bg-darksurface/90 border border-cyan5/30 hover:border-cyan4 rounded-2xl p-5 transition-all">
+          <div class="flex items-center gap-3 mb-2">
+            <div class="p-2 rounded-lg bg-cyan5/20 text-cyan1">
+              <i data-lucide="smartphone" class="w-4 h-4"></i>
+            </div>
+            <h3 class="text-base font-bold text-white">Compatibilidade</h3>
+          </div>
+          <p class="text-xs text-cyan2/80 leading-relaxed">
+            É estritamente necessário que os usuários e indústrias possuam dispositivos, modems e placas de rede homologados para 5G.
+          </p>
+        </div>
+
+        <!-- 5. Consumo de energia -->
+        <div class="fade-up-item bg-darksurface/90 border border-cyan5/30 hover:border-cyan4 rounded-2xl p-5 transition-all">
+          <div class="flex items-center gap-3 mb-2">
+            <div class="p-2 rounded-lg bg-cyan5/20 text-cyan1">
+              <i data-lucide="battery-warning" class="w-4 h-4"></i>
+            </div>
+            <h3 class="text-base font-bold text-white">Consumo de energia</h3>
+          </div>
+          <p class="text-xs text-cyan2/80 leading-relaxed">
+            Manter uma grande densidade de equipamentos e transmissores operando em alta frequência ininterruptamente exige planejamento energético inteligente.
+          </p>
+        </div>
+
+        <!-- 6. Desigualdade de acesso -->
+        <div class="fade-up-item bg-darksurface/90 border border-cyan5/30 hover:border-cyan4 rounded-2xl p-5 transition-all">
+          <div class="flex items-center gap-3 mb-2">
+            <div class="p-2 rounded-lg bg-cyan5/20 text-cyan1">
+              <i data-lucide="users-round" class="w-4 h-4"></i>
+            </div>
+            <h3 class="text-base font-bold text-white">Desigualdade de acesso</h3>
+          </div>
+          <p class="text-xs text-cyan2/80 leading-relaxed">
+            Nem todas as regiões periféricas, cidades rurais e populações vulneráveis possuem condições econômicas de usufruir da tecnologia.
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <!-- Linha divisória de neon -->
+    <div class="w-full h-px bg-gradient-to-r from-transparent via-cyan4/50 to-transparent my-10"></div>
+
+    <!-- =======================================================================
+         SEÇÃO FINAL: CONECTIVIDADE ESPACIAL 5G NTN (SATÉLITE ⇄ TERRA)
+         (Substitui o rodapé tradicional por uma experiência visual interativa)
+         ======================================================================= -->
+    <section class="poster-section my-8 relative overflow-hidden rounded-3xl border-2 border-cyan4/50 bg-gradient-to-b from-[#051522] via-[#030d15] to-[#020508] p-6 sm:p-10 shadow-[0_0_60px_rgba(54,198,198,0.25)] box-glow-strong">
+      
+      <!-- Cabeçalho da Seção Espacial -->
+      <div class="text-center max-w-2xl mx-auto mb-8">
+        <div class="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-cyan5/20 border border-cyan3/40 mb-3 backdrop-blur-md">
+          <span class="w-2.5 h-2.5 rounded-full bg-cyan1 animate-ping"></span>
+          <span class="text-xs font-mono font-bold uppercase tracking-widest text-cyan1">
+            5G NTN • Redes Não-Terrestres &amp; IoT por Satélite
+          </span>
+        </div>
+        <h2 class="text-2xl sm:text-4xl font-display font-black text-white tracking-tight uppercase mb-2">
+          Comunicação Orbital: <span class="text-gradient-cyan text-glow">Satélite ⇄ Terra</span>
+        </h2>
+        <p class="text-xs sm:text-sm text-cyan2/90 leading-relaxed">
+          Para superar o desafio de cobertura nas regiões rurais, florestas e oceanos, a tecnologia <strong>5G NTN</strong> conecta satélites de baixa órbita (LEO) diretamente aos dispositivos e sensores terrestres em uma transmissão bidirecional ininterrupta.
+        </p>
+      </div>
+
+      <!-- PALCO VISUAL: O SATÉLITE, O CORREDOR DE FEIXES E A TERRA -->
+      <div class="relative w-full max-w-3xl mx-auto h-[480px] sm:h-[530px] rounded-2xl bg-[#030910] border border-cyan5/30 overflow-hidden flex flex-col justify-between p-4 sm:p-6 select-none">
+        
+        <!-- Céu Estrelado / Grade Espacial de Fundo -->
+        <div class="absolute inset-0 bg-[radial-gradient(circle_at_50%_20%,rgba(54,198,198,0.15)_0%,transparent_60%)] pointer-events-none"></div>
+        <div class="absolute top-8 left-12 w-1 h-1 rounded-full bg-white opacity-80 animate-ping"></div>
+        <div class="absolute top-20 right-20 w-1.5 h-1.5 rounded-full bg-cyan1 opacity-90 animate-pulse"></div>
+        <div class="absolute top-36 left-1/4 w-1 h-1 rounded-full bg-cyan2 opacity-60"></div>
+        <div class="absolute top-24 right-1/3 w-1 h-1 rounded-full bg-cyan4 opacity-70"></div>
+
+        <!-- 1. O SATÉLITE 5G LEO (Órbita de 550 km) -->
+        <div class="relative z-10 flex flex-col items-center">
+          <div class="animate-satellite flex flex-col items-center cursor-pointer group" id="satellite-interactive-unit" title="Satélite 5G LEO (Clique para disparar pulso)">
+            
+            <!-- Ilustração Vetorial de Alta Definição do Satélite 5G -->
+            <div class="relative flex items-center justify-center">
+              
+              <!-- Ondas de Rádio Concêntricas emanando do transmissor do satélite -->
+              <div class="sat-wave-pulse w-24 h-24 top-6 -left-3"></div>
+              <div class="sat-wave-pulse sat-wave-pulse-2 w-24 h-24 top-6 -left-3"></div>
+
+              <!-- Painel Solar Esquerdo -->
+              <div class="w-14 sm:w-20 h-7 rounded border border-cyan4/80 bg-gradient-to-r from-cyan5/40 to-cyan5/80 p-0.5 flex gap-0.5 shadow-[0_0_12px_rgba(89,221,221,0.3)]">
+                <span class="flex-1 bg-[#061e2a] border border-cyan4/40 rounded-sm"></span>
+                <span class="flex-1 bg-[#061e2a] border border-cyan4/40 rounded-sm"></span>
+                <span class="flex-1 bg-[#061e2a] border border-cyan4/40 rounded-sm"></span>
+              </div>
+
+              <!-- Corpo Central do Satélite e Chassi Metálico -->
+              <div class="relative w-12 sm:w-16 h-12 sm:h-16 rounded-xl bg-gradient-to-b from-gray-900 to-[#072433] border-2 border-cyan1 flex flex-col items-center justify-center shadow-[0_0_20px_#59DDDD] mx-1">
+                <span class="text-[9px] font-mono font-bold text-cyan1">5G-SAT</span>
+                <span class="w-2 h-2 rounded-full bg-cyan1 animate-ping shadow-[0_0_8px_#B2FFFF] mt-1"></span>
+              </div>
+
+              <!-- Painel Solar Direito -->
+              <div class="w-14 sm:w-20 h-7 rounded border border-cyan4/80 bg-gradient-to-r from-cyan5/80 to-cyan5/40 p-0.5 flex gap-0.5 shadow-[0_0_12px_rgba(89,221,221,0.3)]">
+                <span class="flex-1 bg-[#061e2a] border border-cyan4/40 rounded-sm"></span>
+                <span class="flex-1 bg-[#061e2a] border border-cyan4/40 rounded-sm"></span>
+                <span class="flex-1 bg-[#061e2a] border border-cyan4/40 rounded-sm"></span>
+              </div>
+            </div>
+
+            <!-- Antena Parabólica / Horn Transmissor voltado para a Terra -->
+            <div class="w-6 h-3 border-b-2 border-x-2 border-cyan1 rounded-b-full bg-cyan5/40 shadow-[0_0_10px_#B2FFFF]"></div>
+
+            <!-- Tag de Identificação do Satélite -->
+            <div class="mt-2 px-2.5 py-0.5 rounded-full bg-darkbase/90 border border-cyan5/50 text-[10px] font-mono text-cyan1 flex items-center gap-1.5 shadow-[0_0_10px_rgba(54,198,198,0.4)]">
+              <i data-lucide="orbit" class="w-3 h-3 text-cyan3"></i>
+              <span>Satélite LEO 5G • 550 km de Órbita</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- 2. CORREDOR CENTRAL DE TRANSMISSÃO BIDIRECIONAL (FEIXES E PACOTES) -->
+        <div class="relative flex-1 flex items-center justify-center my-1">
+          
+          <!-- Canal Esquerdo: DOWNLINK (Satélite ➔ Terra) -->
+          <div class="relative w-28 sm:w-36 h-full flex flex-col items-center justify-center border-r border-dashed border-cyan4/30 pr-3">
+            <!-- Linha Laser de Conexão Contínua -->
+            <div class="absolute inset-y-0 w-0.5 bg-gradient-to-b from-cyan1 via-cyan4 to-cyan5/50 shadow-[0_0_10px_#B2FFFF]"></div>
+            
+            <!-- Pacotes de Dados Descendo em Tempo Real -->
+            <div class="packet-down-1 absolute flex items-center gap-1 px-2 py-0.5 rounded bg-cyan1 text-darkbase font-mono font-black text-[9px] shadow-[0_0_15px_#B2FFFF]">
+              <i data-lucide="arrow-down" class="w-2.5 h-2.5"></i>
+              <span>1.2 Gbps</span>
+            </div>
+            <div class="packet-down-2 absolute flex items-center gap-1 px-1.5 py-0.5 rounded bg-cyan3 text-darkbase font-mono font-bold text-[8px] shadow-[0_0_10px_#7AE4E4]">
+              <i data-lucide="satellite" class="w-2.5 h-2.5"></i>
+              <span>Downlink</span>
+            </div>
+
+            <span class="absolute left-2 text-[9px] font-mono text-cyan3/70 uppercase rotate-90 sm:rotate-0">
+              Downlink 5G
+            </span>
+          </div>
+
+          <!-- Canal Direito: UPLINK (Terra ➔ Satélite) -->
+          <div class="relative w-28 sm:w-36 h-full flex flex-col items-center justify-center border-l border-dashed border-cyan5/30 pl-3">
+            <!-- Linha Laser de Conexão Contínua -->
+            <div class="absolute inset-y-0 w-0.5 bg-gradient-to-t from-cyan5 via-cyan3 to-cyan1/50 shadow-[0_0_10px_#59DDDD]"></div>
+
+            <!-- Pacotes de Dados Subindo em Tempo Real -->
+            <div class="packet-up-1 absolute flex items-center gap-1 px-2 py-0.5 rounded bg-cyan4 text-darkbase font-mono font-black text-[9px] shadow-[0_0_15px_#59DDDD]">
+              <i data-lucide="arrow-up" class="w-2.5 h-2.5"></i>
+              <span>380 Mbps</span>
+            </div>
+            <div class="packet-up-2 absolute flex items-center gap-1 px-1.5 py-0.5 rounded bg-[#36C6C6] text-white font-mono font-bold text-[8px] shadow-[0_0_10px_#36C6C6]">
+              <i data-lucide="radio" class="w-2.5 h-2.5"></i>
+              <span>IoT Telemetria</span>
+            </div>
+
+            <span class="absolute right-2 text-[9px] font-mono text-cyan4/70 uppercase -rotate-90 sm:rotate-0">
+              Uplink IoT
+            </span>
+          </div>
+        </div>
+
+        <!-- 3. A SUPERFÍCIE TERRESTRE, ESTAÇÃO GATEWAY E SENSORES IOT -->
+        <div class="relative z-10 flex flex-col items-center">
+          
+          <!-- Estação Terrena e Sensores Transmissores -->
+          <div class="flex items-end justify-center gap-6 sm:gap-12 mb-2 relative">
+            
+            <!-- Sensor IoT Agrícola / Rural -->
+            <div class="flex flex-col items-center text-center">
+              <span class="w-2 h-2 rounded-full bg-cyan1 animate-pulse mb-1"></span>
+              <div class="w-7 h-7 rounded-lg bg-darksurface border border-cyan4/50 flex items-center justify-center text-cyan1 shadow-[0_0_10px_#59DDDD]">
+                <i data-lucide="sprout" class="w-3.5 h-3.5"></i>
+              </div>
+              <span class="text-[8px] font-mono text-cyan3 mt-0.5">Agro IoT</span>
+            </div>
+
+            <!-- Estação Gateway Principal com Antena Parabólica de Solo -->
+            <div class="flex flex-col items-center text-center relative cursor-pointer group" id="earth-gateway-unit" title="Estação Gateway Terrestre">
+              <!-- Ondas de Rádio Concêntricas saindo da Terra -->
+              <div class="earth-wave-pulse w-24 h-24 -top-6 -left-8"></div>
+              
+              <!-- Antena Terrena de Alta Frequência -->
+              <div class="relative flex flex-col items-center">
+                <div class="w-8 h-4 border-t-2 border-x-2 border-cyan1 rounded-t-full bg-cyan5/30 shadow-[0_0_15px_#B2FFFF] transform rotate-180"></div>
+                <div class="w-1 h-3 bg-cyan3"></div>
+                <div class="w-6 h-1.5 bg-gray-700 rounded"></div>
+              </div>
+              <span class="text-[9px] font-mono font-bold text-cyan1 mt-1">Gateway 5G</span>
+            </div>
+
+            <!-- Sensor IoT Marítimo / Frota de Navios -->
+            <div class="flex flex-col items-center text-center">
+              <span class="w-2 h-2 rounded-full bg-cyan3 animate-pulse mb-1"></span>
+              <div class="w-7 h-7 rounded-lg bg-darksurface border border-cyan4/50 flex items-center justify-center text-cyan1 shadow-[0_0_10px_#59DDDD]">
+                <i data-lucide="ship" class="w-3.5 h-3.5"></i>
+              </div>
+              <span class="text-[8px] font-mono text-cyan3 mt-0.5">Navio IoT</span>
+            </div>
+          </div>
+
+          <!-- O Horizonte Curvado da Terra com Atmosfera Iluminada em Ciano -->
+          <div class="relative w-full h-14 overflow-hidden flex justify-center">
+            <div class="w-[140%] h-48 rounded-[50%] bg-gradient-to-b from-[#082a3a] via-[#051722] to-[#02090e] border-t-2 border-cyan1 earth-atmosphere flex flex-col items-center pt-2">
+              <div class="flex items-center gap-1 text-[10px] font-mono text-cyan1 font-bold">
+                <i data-lucide="globe" class="w-3.5 h-3.5 text-cyan1"></i>
+                <span>Superfície Terrestre &bull; Cobertura Global 100% Ativa</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- PAINEL DE CONTROLE E TELEMETRIA ORBITAL INTERATIVA -->
+      <div class="mt-6 p-4 sm:p-5 rounded-2xl bg-darksurface/90 border border-cyan5/50 flex flex-wrap items-center justify-between gap-4">
+        <div class="grid grid-cols-2 sm:grid-cols-3 gap-3 text-left">
+          <div>
+            <span class="text-[10px] font-mono text-gray-400 block uppercase">Canal Downlink</span>
+            <span class="text-xs sm:text-sm font-black text-cyan1 font-mono flex items-center gap-1">
+              <i data-lucide="arrow-down-right" class="w-3.5 h-3.5 text-cyan1"></i> 1.2 Gbps (Banda Ka)
+            </span>
+          </div>
+          <div>
+            <span class="text-[10px] font-mono text-gray-400 block uppercase">Canal Uplink IoT</span>
+            <span class="text-xs sm:text-sm font-black text-cyan4 font-mono flex items-center gap-1">
+              <i data-lucide="arrow-up-right" class="w-3.5 h-3.5 text-cyan4"></i> 380 Mbps (Direct-to-Cell)
+            </span>
+          </div>
+          <div class="col-span-2 sm:col-span-1">
+            <span class="text-[10px] font-mono text-gray-400 block uppercase">Latência Órbita Baixa</span>
+            <span class="text-xs sm:text-sm font-black text-cyan2 font-mono flex items-center gap-1">
+              <i data-lucide="timer" class="w-3.5 h-3.5 text-cyan3"></i> ~22 ms (LEO 550km)
+            </span>
+          </div>
+        </div>
+
+        <!-- Botão Interativo para Disparar Transmissão -->
+        <button id="btn-trigger-satellite-burst" class="py-2.5 px-5 rounded-xl bg-gradient-to-r from-cyan5 via-cyan4 to-cyan1 text-darkbase font-display font-extrabold text-xs uppercase tracking-wider shadow-[0_0_20px_#59DDDD] hover:brightness-110 active:scale-95 transition-all flex items-center gap-2">
+          <i data-lucide="zap" class="w-4 h-4 fill-current"></i>
+          <span>Disparar Pulso Satélite ⇄ Terra</span>
+        </button>
+      </div>
+
+      <!-- Feedback de Transmissão Disparada -->
+      <div id="satellite-burst-log" class="hidden mt-3 text-center text-xs font-mono text-cyan1 bg-darkbase/80 p-2.5 rounded-xl border border-cyan4/40">
+        🚀 <strong>Transmissão Bidirecional Concluída com Sucesso:</strong> Sincronização orbital 5G NTN confirmada. Telemetria de sensores terrestres entregue aos servidores da nuvem!
+      </div>
+    </section>
+
+  </main>
+
+  <!-- Script de Inicialização dos Ícones Lucide -->
+  <script>
+    lucide.createIcons();
+  </script>
+
+  <!-- Script Customizado Interativo -->
+  <script src="script.js"></script>
+</body>
+</html>
